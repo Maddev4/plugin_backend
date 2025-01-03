@@ -1,0 +1,9 @@
+.env
+.DS_Store
+venv/
+migrations/
+api/__pycache__/
+api/views/__pycache__/
+config/__pycache__/
+views/__pycache__/
+api/services/__pycache__/
