@@ -7,3 +7,4 @@ api/views/__pycache__/
 config/__pycache__/
 views/__pycache__/
 api/services/__pycache__/
+api/utils/__pycache__/

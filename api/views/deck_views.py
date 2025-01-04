@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from ..models import Deck
 from ..serializers import DeckSerializer
 from ..services.s3_service import S3Service, S3ServiceError
+from ..utils.mockup import mockup_deck
 
 class DeckViewSet(viewsets.ModelViewSet):
     queryset = Deck.objects.all()
@@ -46,90 +47,19 @@ class DeckViewSet(viewsets.ModelViewSet):
                     {"error": "S3 service unavailable"}, 
                     status=status.HTTP_503_SERVICE_UNAVAILABLE
                 )
+            sections = mockup_deck['storylineSlides']['sections']
+            for section in sections:
+                for subsection in section['subSections']:
+                    for slide in subsection['slides']:
+                        slide_id = slide['slideId']
+                        presigned_url = self.s3_service.get_presigned_url(slide_id)
+                        if presigned_url:
+                            slide['presignedUrl'] = presigned_url
             
-            # presigned_url = self.s3_service.get_presigned_url("070f1910-a717-4600-98fc-a569a5433cb7")
-            # print(f'presigned_url: {presigned_url}')
+            mockup_deck['storylineSlides']['sections'] = sections
             
             return Response(
-                {
-                    "deckId": "a97df2fe-434f-4e11-bfa7-804ea575af0b",
-                    "storylineSlides": {
-                        "sections": [
-                            {
-                                "sectionName": "introSection",
-                                "subSections": [
-                                    {
-                                        "subSectionName": "introSubSection1",
-                                        "slides": [
-                                            {
-                                                "presignedUrl": "https://www.hindustantimes.com/ht-img/img/2025/01/01/550x309/happy_new_year_2025_wishes_1735700710315_1735700724642.png",
-                                                "fileId": "mckinsey.pptx", # "101",
-                                                "slideId": "070f1910-a717-4600-98fc-a569a5433cb7"
-                                            },
-                                            {
-                                                "presignedUrl": "https://www.hindustantimes.com/ht-img/img/2024/12/30/original/Screenshot_2024-12-30_at_11.49.43_AM_1735539932468.png",
-                                                "fileId": "mckinsey.pptx", # "104",
-                                                "slideId": "19c9f5d5-d686-4628-8b60-4b170c839f14"
-                                            },
-                                            {
-                                                "presignedUrl": "https://www.hindustantimes.com/ht-img/img/2024/12/30/original/Screenshot_2024-12-30_at_11.49.35_AM_1735540068745.png",
-                                                "fileId": "mckinsey.pptx", # "106",
-                                                "slideId": "e12bc08c-c8b8-4f3e-b7ff-eac2552081d8"
-                                            },
-                                            {
-                                                "presignedUrl": "https://www.hindustantimes.com/ht-img/img/2024/12/30/original/Romantic_New_Year_wish_1735540121577.jpg",
-                                                "fileId": "mckinsey.pptx", # "108",
-                                                "slideId": "3a081d80-703b-4da7-affc-01c6f7c5a416"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "subSectionName": "introSubSection2",
-                                        "slides": [
-                                            {
-                                                "presignedUrl": "https://www.hindustantimes.com/ht-img/img/2024/12/30/original/Screenshot_2024-12-30_at_11.47.28_AM_1735540229541.png",
-                                                "fileId": "mckinsey.pptx", # "112",
-                                                "slideId": "b0f51192-6792-41bb-92ae-3b30bb788f20"
-                                            },
-                                            {
-                                                "presignedUrl": "https://www.hindustantimes.com/ht-img/img/2024/12/30/original/Screenshot_2024-12-30_at_11.49.18_AM_1735540627838.png",
-                                                "fileId": "mckinsey.pptx", # "113",
-                                                "slideId": "0f59bddc-ba90-4905-ab2b-8b2621c80905"
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "sectionName": "industryOverview",
-                                "subSections": []
-                            },
-                            {
-                                "sectionName": "productOverview",
-                                "subSections": [
-                                    {
-                                        "subSectionName": "productSubSection1",
-                                        "slides": [
-                                            {
-                                                "presignedUrl": "https://www.hindustantimes.com/ht-img/img/2024/10/10/550x309/Coach3_1728568380561_1728568394280.jpg",
-                                                "fileId": "106",
-                                                "slideId": "e426c7dc-5a39-4983-82df-4b20d5a3a2a0"
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "sectionName": "caseStudy",
-                                "subSections": []
-                            },
-                            {
-                                "sectionName": "conclusion",
-                                "subSections": []
-                            }
-                        ]
-                    }
-                },
+                mockup_deck,
                 status=status.HTTP_201_CREATED
             )
 

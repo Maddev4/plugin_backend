@@ -147,7 +147,6 @@ class S3Service:
 
     def convert_pptx_to_base64(self, slides):
         try:
-            print(f'Slides: {slides}')
             ids = [slide['slide_id'] for slide in slides if slide['file_id'] == 'mckinsey.pptx']
             try:
                 response = self._s3_client.get_object(
